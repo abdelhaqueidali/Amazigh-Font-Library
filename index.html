@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tifinagh Font Library</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .font-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .font-preview {
+            flex-grow: 1;
+            font-size: 1.5em; /* Larger font size for the preview */
+            margin-right: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow-wrap: break-word; /* Handle long words/no spaces */
+        }
+
+        .font-info {
+            min-width: 200px; /* Prevent info from shrinking too much */
+        }
+
+        .font-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+       .font-buttons button {
+            margin-right: 10px;
+            padding: 8px 16px;
+            background-color: #007bff; /* Bootstrap-like blue */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .font-buttons button:hover{
+            background-color: #0056b3;
+        }
+      .font-buttons a{
+          text-decoration: none;
+          color: inherit;
+        }
+
+        #pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        #pagination button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        #page-number {
+            margin: 0 10px;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Input for custom text */
+        #custom-text-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        #custom-text-container label{
+          margin-right: 0.5rem;
+        }
+        #custom-text {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            flex-grow: 1; /* Allow input to take up available space */
+        }
+      #download-all-link{
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-decoration: none;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .font-container {
+          flex-direction: column;
+        }
+        .font-preview {
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+</head>
+<body>
+    <h1>Tifinagh Font Library</h1>
+
+    <a id="download-all-link" href="https://github.com/abdelhaqueidali/Unicode-Fonts-For-Amazigh-Tifinagh/archive/refs/heads/main.zip">Download All Fonts</a>
+
+    <div id="custom-text-container">
+        <label for="custom-text">Enter Custom Text:</label>
+        <input type="text" id="custom-text" value="ⴰⴱⴳⴷⴹⴻⴼⴽⵀⵃⵄⵅⵇⵉⵊⵍⵎⵏⵓⵔⵕⵖⵙⵚⵛⵜⵟⵡⵢⵣⵥⵯ">
+        <button id="update-preview">Update Preview</button>
+    </div>
+
+
+    <div id="loading">Loading fonts...</div>
+
+    <div id="font-list">
+        <!-- Font containers will be added here -->
+    </div>
+
+    <div id="pagination">
+        <button id="prev-page">< Prev</button>
+        <span id="page-number">Page 1</span>
+        <button id="next-page">Next ></button>
+    </div>
+
+    <script>
+        (async function() {
+            const fontListContainer = document.getElementById('font-list');
+            const loadingIndicator = document.getElementById('loading');
+            const prevPageButton = document.getElementById('prev-page');
+            const nextPageButton = document.getElementById('next-page');
+            const pageNumberSpan = document.getElementById('page-number');
+            const customTextInput = document.getElementById('custom-text');
+            const updatePreviewButton = document.getElementById('update-preview');
+            const fontsPerPage = 24;
+            let currentPage = 1;
+            let fontNames = [];
+
+             // Function to load and apply a font
+            function loadAndApplyFont(fontName, previewElement) {
+                const fontFace = new FontFace(fontName, `url(Fonts/${fontName})`);
+                document.fonts.add(fontFace);
+
+                fontFace.load().then(() => {
+                    previewElement.style.fontFamily = fontName;
+                }).catch(error => {
+                    console.error(`Error loading font ${fontName}:`, error);
+                    previewElement.textContent = `Error loading font. Defaulting...`;
+                    previewElement.style.fontFamily = ''; // Reset to default
+                });
+            }
+
+            // Function to display a page of fonts
+            function displayPage(page) {
+              fontListContainer.innerHTML = ''; // Clear previous fonts
+
+              const startIndex = (page - 1) * fontsPerPage;
+              const endIndex = Math.min(startIndex + fontsPerPage, fontNames.length);
+
+              for (let i = startIndex; i < endIndex; i++) {
+                const fontName = fontNames[i];
+
+                const fontContainer = document.createElement('div');
+                fontContainer.classList.add('font-container');
+
+                const fontPreview = document.createElement('div');
+                fontPreview.classList.add('font-preview');
+                fontPreview.textContent = customTextInput.value; // Use current custom text
+
+
+                const fontInfo = document.createElement('div');
+                fontInfo.classList.add('font-info');
+
+                const fontNameDiv = document.createElement('div');
+                fontNameDiv.classList.add('font-name');
+                fontNameDiv.textContent = fontName.replace(/\.(otf|ttf|woff|woff2)$/i, ""); // remove extension
+
+                const fontButtons = document.createElement('div');
+                fontButtons.classList.add('font-buttons');
+
+                const downloadButton = document.createElement('button');
+                downloadButton.innerHTML = `<a href="Fonts/${fontName}" download="${fontName}">Download</a>`;
+
+                fontButtons.appendChild(downloadButton);
+                fontInfo.appendChild(fontNameDiv);
+                fontInfo.appendChild(fontButtons);
+
+                fontContainer.appendChild(fontPreview);
+                fontContainer.appendChild(fontInfo);
+                fontListContainer.appendChild(fontContainer);
+
+                loadAndApplyFont(fontName, fontPreview);
+
+              }
+              pageNumberSpan.textContent = `Page ${page}`;
+              prevPageButton.disabled = page === 1;
+              nextPageButton.disabled = endIndex >= fontNames.length;
+            }
+
+
+            // Fetch the list.txt file
+            loadingIndicator.style.display = 'block';
+            try {
+                const response = await fetch('list.txt');
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch list.txt: ${response.status}`);
+                }
+                const text = await response.text();
+                fontNames = text.trim().split('\n').map(line => line.trim());
+
+                displayPage(currentPage); // Display the first page initially
+
+            } catch (error) {
+                console.error('Error:', error);
+                fontListContainer.innerHTML = `<p>Error loading font list: ${error.message}</p>`;
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+
+              // Event listeners for pagination
+            prevPageButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayPage(currentPage);
+                }
+            });
+
+            nextPageButton.addEventListener('click', () => {
+                if ((currentPage * fontsPerPage) < fontNames.length) {
+                    currentPage++;
+                    displayPage(currentPage);
+                }
+            });
+
+              // Event listener for custom text update
+            updatePreviewButton.addEventListener('click', () => {
+              displayPage(currentPage); // Re-render current page with new text
+            });
+        })();
+    </script>
+</body>
+</html>
