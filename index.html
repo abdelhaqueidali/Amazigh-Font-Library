@@ -14,60 +14,60 @@
         h1 {
             text-align: center;
             margin-bottom: 30px;
+            color: #333; /* Darker title color */
         }
 
         .font-container {
-            display: flex;
-            align-items: stretch; /* Make children equal height */
             margin-bottom: 20px;
-            padding: 15px; /* Increased padding */
+            padding: 20px; /* Increased padding */
             border: 1px solid #ddd;
             background-color: #fff;
-            border-radius: 8px; /* Slightly larger radius */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+            border-radius: 10px; /* Slightly larger radius */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+            transition: transform 0.2s ease-in-out; /* Smooth transition on hover */
+            display: flex;          /* Use flexbox for layout */
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center;    /* Center items horizontally */
 
-        .font-preview {
-            flex-grow: 1;
-            font-size: 2em; /* Even larger font size for preview */
-            margin-right: 20px;
-            padding: 15px; /* Increased padding */
-            border: 1px solid #ccc;
-            border-radius: 6px; /* Slightly larger radius */
-            overflow-wrap: break-word;
-            display: flex;
-            align-items: center; /* Vertically center the text */
-            justify-content: center; /* Center horizontally as well */
         }
-
-        .font-info {
-            min-width: 250px; /* Increased min-width for better layout */
-            display: flex;
-            flex-direction: column; /* Stack name and buttons vertically */
-            justify-content: space-between; /* Space out the content */
-            padding: 10px; /* Add some padding */
+        .font-container:hover{
+          transform: translateY(-5px);
         }
 
         .font-name {
-            font-size: 1.3em; /* Slightly larger font name */
+            font-size: 1.5em; /* Larger font name */
             font-weight: bold;
-            margin-bottom: 10px; /* More space below the name */
-            text-align: center; /* Center the font name */
+            margin-bottom: 15px; /* More space below the name */
+            text-align: center;
+            color: #444;       /* Darker text color */
         }
 
+        .font-preview {
+            font-size: 2.5em; /* Larger font size for preview */
+            margin-bottom: 15px; /* Space between preview and buttons */
+            padding: 20px;     /* Increased padding */
+            border: 2px solid #ccc; /* Thicker border */
+            border-radius: 8px;   /* Slightly larger radius */
+            overflow-wrap: break-word;
+            width: 100%;        /* Take full width */
+            text-align: center; /* Center the text */
+            box-sizing: border-box; /* Include padding and border in width */
+        }
+
+
         .font-buttons {
-            text-align: center; /* Center the buttons */
+            text-align: center;
         }
 
        .font-buttons button {
-            padding: 10px 20px; /* Larger buttons */
+            padding: 12px 24px; /* Larger buttons */
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px; /* Slightly larger radius */
             cursor: pointer;
             transition: background-color 0.3s ease;
-            font-size: 1em; /* Consistent font size */
+            font-size: 1.1em; /* Slightly larger font size */
         }
         .font-buttons button:hover {
             background-color: #0056b3;
@@ -86,11 +86,11 @@
 
         #pagination button {
             margin: 0 5px;
-            padding: 8px 16px; /* Consistent padding with buttons */
+            padding: 8px 16px;
             background-color: #eee;
             border: 1px solid #ccc;
             cursor: pointer;
-            border-radius: 4px; /* Rounded corners */
+            border-radius: 4px;
             font-size: 1em;
         }
         #pagination button:disabled {
@@ -113,23 +113,23 @@
             margin-bottom: 20px;
             display: flex;
             align-items: center;
-            justify-content: center; /* Center the input and button */
+            justify-content: center;
         }
         #custom-text-container label {
           margin-right: 0.5rem;
         }
         #custom-text {
-            padding: 10px; /* Increased padding */
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             margin-right: 10px;
-            flex-grow: 0; /* Don't grow, keep a reasonable size */
-            width: 300px; /* Set a fixed width, adjust as needed */
+            flex-grow: 0;
+            width: 300px;
         }
 
-        #update-preview { /* Style the update button */
+        #update-preview {
             padding: 10px 20px;
-            background-color: #28a745; /* Success green */
+            background-color: #28a745;
             color: white;
             border: none;
             border-radius: 4px;
@@ -150,31 +150,24 @@
         color: white;
         padding: 10px;
         border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+      #download-all-link:hover{
+        background-color: #388e3c;
       }
 
       /* Responsive adjustments */
-      @media (max-width: 768px) {
-        .font-container {
-          flex-direction: column;
-          align-items: stretch; /* Reset alignment for column layout */
-        }
-        .font-preview {
-          margin-right: 0;
-          margin-bottom: 10px;
-          justify-content: center; /* Keep centered in column layout */
-        }
-        .font-info {
-          min-width: 0; /* Reset min-width */
-        }
-         #custom-text {
-           width: 100%; /* Full width on smaller screens */
-            max-width: 300px; /* But not too wide */
-         }
+        @media (max-width: 768px) {
+            #custom-text {
+                width: 100%;
+                max-width: 300px;
+            }
 
-         #custom-text-container{
-            flex-direction: column;
-         }
-      }
+            #custom-text-container{
+                flex-direction: column;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -243,30 +236,26 @@
                 const fontContainer = document.createElement('div');
                 fontContainer.classList.add('font-container');
 
-                const fontPreview = document.createElement('div');
-                fontPreview.classList.add('font-preview');
-                fontPreview.textContent = customTextInput.value; // Use current custom text
-
-
-                const fontInfo = document.createElement('div');
-                fontInfo.classList.add('font-info');
-
                 const fontNameDiv = document.createElement('div');
                 fontNameDiv.classList.add('font-name');
                 fontNameDiv.textContent = fontName.replace(/\.(otf|ttf|woff|woff2)$/i, ""); // remove extension
 
+                const fontPreview = document.createElement('div');
+                fontPreview.classList.add('font-preview');
+                fontPreview.textContent = customTextInput.value; // Use current custom text
+
                 const fontButtons = document.createElement('div');
                 fontButtons.classList.add('font-buttons');
-
                 const downloadButton = document.createElement('button');
                 downloadButton.innerHTML = `<a href="Fonts/${fontName}" download="${fontName}">Download</a>`;
-
                 fontButtons.appendChild(downloadButton);
-                fontInfo.appendChild(fontNameDiv);
-                fontInfo.appendChild(fontButtons);
 
+
+
+                fontContainer.appendChild(fontNameDiv);
                 fontContainer.appendChild(fontPreview);
-                fontContainer.appendChild(fontInfo);
+                fontContainer.appendChild(fontButtons);
+
                 fontListContainer.appendChild(fontContainer);
 
                 loadAndApplyFont(fontName, fontPreview);
